@@ -1,16 +1,20 @@
 let greys = [];
+let corners = [];
 
 function setup() {
   createCanvas(400, 400);
-  noStroke();
-  arrays();
-  dots();
+  // noStroke();
+  // arrays();
+  // dots();
 
-  lines(50, 50, 25, 150, 285, 300, 250, 25);
+  // lines(50, 50, 25, 150, 285, 300, 250, 25);
+
+  corners = randomCorners();
+  boxes();
 }
 
 function draw() {
-
+  // boxes();
 }
 
 function arrays() {
@@ -50,19 +54,19 @@ function dots() {
   }
 }
 
-function lines(long) {
-  let length = long;
-  for (let j = 0; j < 30; j++) {
-    stroke(0, 12 + j);
-    //from .99 to .95
-    let fade = .99;
-    long *= fade;
-    for (let i = 0; i < 400; i++) {
-      length = long + random(15);
-      line(0, i, length, i + 10);
-    }
-  }
-}
+// function lines(long) {
+//   let length = long;
+//   for (let j = 0; j < 30; j++) {
+//     stroke(0, 12 + j);
+//     //from .99 to .95
+//     let fade = .99;
+//     long *= fade;
+//     for (let i = 0; i < 400; i++) {
+//       length = long + random(15);
+//       line(0, i, length, i + 10);
+//     }
+//   }
+// }
 
 function lines(ax, ay, bx, by, cx, cy, dx, dy) {
   let numLines = dist(ax, ay, bx, by);
@@ -80,7 +84,7 @@ function lines(ax, ay, bx, by, cx, cy, dx, dy) {
   let fade = 1.
   let iterations = 30;
   for (let j = 0; j < iterations; j++) {
-    stroke(255, 12 +j);
+    stroke(0, 12 +j);
 
     for (let i = 0; i < numLines; i++) {
       let rand = random(iterations - j + 10);
@@ -100,8 +104,17 @@ function lines(ax, ay, bx, by, cx, cy, dx, dy) {
   // text("d", dx, dy);
 }
 
+function mousePressed() {
+  boxes();
+}
+
 function keyPressed() {
+
+  if (keyCode == 13) {
+    boxes();
+  }
   if (keyCode == 32) {
+
     let ax = random(width*2)-width;
     let ay = random(height*2)-height;
     let bx = random(width*2)-width;
@@ -110,11 +123,71 @@ function keyPressed() {
     let cy = random(height*2)-height;
     let dx = random(width*2)-width;
     let dy = random(height*2)-height;
-    dots();
+    // dots();
     // background(255);
     lines(ax, ay, bx, by, cx, cy, dx, dy);
   }
 }
 
+function randomCorners() {
+  let ax = floor(random(width));
+  let ay = floor(random(height));
+  let bx = floor(random(width));
+  let by = floor(random(height));
+  let cx = floor(random(width));
+  let cy = floor(random(height));
+  // let dx = floor(random(width));
+  // let dy = floor(random(height));
 
+  // boxes(ax, ay, bx, by, cx, cy);
+
+  return [ax, ay, bx, by, cx, cy];
+}
+
+function boxes() {
+  background(255);
+  let ax = corners[0];
+  let ay = corners[1];
+  let bx = corners[2];
+  let by = corners[3];
+  let cx = corners[4];
+  let cy = corners[5];
+  // console.log("a: " + ax +", " + ay + ", b: " + bx +", " + by + ", c: " + cx +", " + cy);
+
+  let slopeAB = (by - ay)/ (bx - ax);
+  let slopeBC = (cy - by)/ (cx - cy);
+
+  // console.log(slopeAB+", "+slopeBC);
+
+  let mBA = atan2 (ay - by, ax - bx);
+  let mBC = atan2(cy - by, cx - bx);
+  let mAC = atan2(cy - ay, cx - cy);
+  console.log(mBA +", "+mBC);
+  console.log("mAC: " + mAC);
+
+  let dx = mouseX;
+  let dy = mouseY;
+
+  let mBD = atan2(dy - by, dx - bx);
+  console.log(mBD);
+
+  line(ax, ay, bx, by);
+  line(bx, by, cx, cy);
+  line(cx, cy, dx, dy);
+  line(dx, dy, ax, ay);
+
+  noStroke();
+  fill(255, 0,0);
+  ellipse(ax, ay, 5, 5);
+  ellipse(bx, by, 5, 5);
+  ellipse(cx, cy, 5, 5);
+  ellipse(dx, dy, 5, 5);
+  fill(255, 0, 255);
+  stroke(0);
+  text("A", ax, ay);
+  text("B", bx, by);
+  text("C", cx, cy);
+  text("D", dx, dy);
+
+}
 //fade in with a stored pixel array of calculated image
