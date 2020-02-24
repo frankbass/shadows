@@ -159,35 +159,39 @@ function boxes() {
 
   // console.log(slopeAB+", "+slopeBC);
 
-  let mBA = atan2 (ay - by, ax - bx);
-  let mBC = atan2(cy - by, cx - bx);
-  let mAC = atan2(cy - ay, cx - cy);
-  console.log(mBA +", "+mBC);
-  console.log("mAC: " + mAC);
+  // let mBA = atan2 (ay - by, ax - bx);
+  // let mBC = atan2(cy - by, cx - bx);
+  // let mAC = atan2(cy - ay, cx - cy);
+  // console.log("mBA: "+mBA);
+  // console.log("mBC: "+mBC);
+  // console.log("mAC: " + mAC);
 
-  let dx = mouseX;
-  let dy = mouseY;
+  // let dx = mouseX;
+  // let dy = mouseY;
 
-  let mBD = atan2(dy - by, dx - bx);
-  console.log(mBD);
+  // let mBD = atan2(dy - by, dx - bx);
+  // console.log("mBD: "+ mBD);
+  // let mAD = atan2(dy - ay, dx - ax);
+  // console.log("mAD: "+ mAD);
+  // console.log(" ");
 
   line(ax, ay, bx, by);
   line(bx, by, cx, cy);
-  line(cx, cy, dx, dy);
-  line(dx, dy, ax, ay);
+  // line(cx, cy, dx, dy);
+  // line(dx, dy, ax, ay);
 
   noStroke();
   fill(255, 0,0);
   ellipse(ax, ay, 5, 5);
   ellipse(bx, by, 5, 5);
   ellipse(cx, cy, 5, 5);
-  ellipse(dx, dy, 5, 5);
+  // ellipse(dx, dy, 5, 5);
   fill(255, 0, 255);
   stroke(0);
   text("A", ax, ay);
   text("B", bx, by);
   text("C", cx, cy);
-  text("D", dx, dy);
+  // text("D", dx, dy);
 
 }
 //fade in with a stored pixel array of calculated image
