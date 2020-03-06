@@ -188,27 +188,26 @@ function boxes() {
 
   // console.log("mAC: " + mAC);
 
-  // let diffAng = abs(slopeBA - slopeBC);
-  let diffAng = (abs(mBA - mBC));
-  if (diffAng > 180) {
-    let temp = diffAng % 180;
-    diffAng = 180 - temp;
-
-  }
+  // let mBA = atan2 (ay - by, ax - bx);
+  // let mBC = atan2(cy - by, cx - bx);
+  // let mAC = atan2(cy - ay, cx - cy);
+  // console.log("mBA: "+mBA);
+  // console.log("mBC: "+mBC);
+  // console.log("mAC: " + mAC);
 
   // let dx = mouseX;
   // let dy = mouseY;
 
   // let mBD = atan2(dy - by, dx - bx);
+  // console.log("mBD: "+ mBD);
+  // let mAD = atan2(dy - ay, dx - ax);
+  // console.log("mAD: "+ mAD);
+  // console.log(" ");
 
 
   strokeWeight(1);
   line(ax, ay, bx, by);
   line(bx, by, cx, cy);
-  line(ax, ay, cx, cy);
-  strokeWeight(.5);
-  line(ax, ay, m.x, m.y);
-  line(cx, cy, n.x, n.y);
   // line(cx, cy, dx, dy);
   // line(dx, dy, ax, ay);
 
@@ -218,50 +217,12 @@ function boxes() {
   ellipse(bx, by, 5, 5);
   ellipse(cx, cy, 5, 5);
   // ellipse(dx, dy, 5, 5);
-
-  // text("D", dx, dy);
-
-  beginShape();
-  fill(150);
-  // noStroke();
-  vertex(ax,ay);
-  vertex(m.x, m.y);
-  // missing corner? vertex
-  vertex(n.x, n.y);
-  vertex(cx, cy);
-  endShape(CLOSE);
-
   fill(255, 0, 255);
   stroke(0);
   text("A", ax, ay);
   text("B", bx, by);
   text("C", cx, cy);
-}
-
-function quadrants(theta) {
-  let quadNum;
-  if (theta <= 0 && theta > -90) {
-    quadNum = 0;
-  } else if (theta <= -90 && theta < 180) {
-    quadNum = 1;
-  } else if (theta > 90 && theta <= 180) {
-    quadNum = 2;
-  } else {
-    quadNum = 3;
-  }
-  return quadNum;
-}
-
-function endPoint(x2, y2, slope, quadNum) {
-  let x, y;
-  switch (quadNum) {
-    case 0:
-      x = solveForX(x2, y2, slope, 0);
-      y = solveForY(x2, y2, slope, width);
-      break;
-    case 1:
-    x = solveForX(x2, y2, slope, 0);
-    y = solveForY(x2, y2, slope, 0);
+  // text("D", dx, dy);
 
       break;
     case 2:
