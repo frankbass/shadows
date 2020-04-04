@@ -109,7 +109,7 @@ function mousePressed() {
 }
 
 function keyPressed() {
-
+  // console.log(keyCode);
   if (keyCode == 13) {
     boxes();
   }
@@ -159,8 +159,8 @@ function boxes() {
   let cx = mouseX;
   let cy = mouseY;
   // console.log("cx, cy: " + cx + ", " + cy);
-  let slopeBA = (ay - by)/ (ax - bx);
-  let slopeBC = (cy - by)/ (cx - bx);
+  let slopeBA = (ay - by) / (ax - bx);
+  let slopeBC = (cy - by) / (cx - bx);
   //
   // console.log("BA "+slopeBA);
   // console.log("BC "+slopeBC);
@@ -179,37 +179,37 @@ function boxes() {
   // let mAC = degrees(atan2(cy - ay, cx - cy));
   // console.log("BA " + mBA);
   // console.log("BC " + mBC);
+
   let bcQuad = quadrants(mBC);
   let baQuad = quadrants(mBA);
+
   // console.log("BC Quad: " + bcQuad);
 
   let m = endPoint(ax, ay, slopeBA, baQuad);
   let n = endPoint(cx, cy, slopeBC, bcQuad);
 
+  fourCorners(m, n, baQuad, bcQuad);
   // console.log("mAC: " + mAC);
 
-  // let mBA = atan2 (ay - by, ax - bx);
-  // let mBC = atan2(cy - by, cx - bx);
-  // let mAC = atan2(cy - ay, cx - cy);
-  // console.log("mBA: "+mBA);
-  // console.log("mBC: "+mBC);
-  // console.log("mAC: " + mAC);
+  // let diffAng = abs(slopeBA - slopeBC);
+  let diffAng = (abs(mBA - mBC));
+  if (diffAng > 180) {
+    let temp = diffAng % 180;
+    diffAng = 180 - temp;
 
-  // let dx = mouseX;
-  // let dy = mouseY;
-
-  // let mBD = atan2(dy - by, dx - bx);
-  // console.log("mBD: "+ mBD);
-  // let mAD = atan2(dy - ay, dx - ax);
-  // console.log("mAD: "+ mAD);
-  // console.log(" ");
-
+  }
 
   strokeWeight(1);
   line(ax, ay, bx, by);
   line(bx, by, cx, cy);
   // line(cx, cy, dx, dy);
   // line(dx, dy, ax, ay);
+  line(ax, ay, cx, cy);
+  strokeWeight(.5);
+  line(ax, ay, m.x, m.y);
+  line(cx, cy, n.x, n.y);
+
+
 
   noStroke();
   fill(255, 0, 0);
@@ -217,6 +217,17 @@ function boxes() {
   ellipse(bx, by, 5, 5);
   ellipse(cx, cy, 5, 5);
   // ellipse(dx, dy, 5, 5);
+
+  beginShape();
+  fill(150);
+  // noStroke();
+  vertex(ax, ay);
+  vertex(m.x, m.y);
+  // missing corner? vertex
+  vertex(n.x, n.y);
+  vertex(cx, cy);
+  endShape(CLOSE);
+
   fill(255, 0, 255);
   stroke(0);
   text("A", ax, ay);
@@ -224,22 +235,51 @@ function boxes() {
   text("C", cx, cy);
   // text("D", dx, dy);
 
+}
+
+//determine where A and C are in relation to B, quad 0-3
+function quadrants(theta) {
+  let quadNum;
+  if (theta <= 0 && theta > -90) {
+    quadNum = 0;
+  } else if (theta <= -90 && theta < 180) {
+    quadNum = 1;
+  } else if (theta > 90 && theta <= 180) {
+    quadNum = 2;
+  } else {
+    quadNum = 3;
+  }
+  return quadNum;
+}
+
+//extend BA and BC to create vector m and n
+function endPoint(x2, y2, slope, quadNum) {
+  let x, y;
+  switch (quadNum) {
+    case 0:
+      x = solveForX(x2, y2, slope, 0);
+      y = solveForY(x2, y2, slope, width);
+      break;
+    case 1:
+      x = solveForX(x2, y2, slope, 0);
+      y = solveForY(x2, y2, slope, 0);
+      // text("D", dx, dy);
+
       break;
     case 2:
-    x = solveForX(x2, y2, slope, height);
-    y = solveForY(x2, y2, slope, 0);
+      x = solveForX(x2, y2, slope, height);
+      y = solveForY(x2, y2, slope, 0);
 
       break;
     case 3:
-    x = solveForX(x2, y2, slope, height);
-    y = solveForY(x2, y2, slope, width);
+      x = solveForX(x2, y2, slope, height);
+      y = solveForY(x2, y2, slope, width);
 
       break;
     default:
-
   }
   fill(0);
-  ellipse(x,y, 5,5);
+  ellipse(x, y, 5, 5);
   let vector = createVector(x, y);
   return vector;
 }
@@ -248,8 +288,7 @@ function solveForY(x2, y2, slope, x) {
   let y = slope * (x - x2) + y2;
   if (y < 0) {
     y = 0;
-  }
-  else if (y > height) {
+  } else if (y > height) {
     y = height;
   }
   return y;
@@ -259,12 +298,39 @@ function solveForX(x2, y2, slope, y) {
   let x = (y - y2 + (slope * x2)) / slope;
   if (x > width) {
     x = width;
-  }
-  else if (x < 0) {
+  } else if (x < 0) {
     x = 0;
   }
   return x;
 }
 
+//this should be an object with a constructor
+function fourCorners(mVec, nVec, qBA, qBC) {
+  let m = mVec;
+  let n = nVec;
+  let mQuad = qBA;
+  let nQuad = qBC;
+  // console.log("mQ " + mQuad);
+  // console.log("nQ " + nQuad);
+
+  let c0 = createVector(width, 0);
+  let c1 = createVector(0, 0);
+  let c2 = createVector(0, height);
+  let c3 = createVector(width, height);
+  let cornerArray = [c0, c1, c2, c3];
+
+
+  if (m.x == n.x || m.y == n.y) {
+    console.log("It's a line!");
+  } else {
+    let polyCorner0 = cornerArray[mQuad];
+
+    console.log(mQuad);
+    if (mQuad == nQuad) {}
+  }
+
+
+
+}
 
 //fade in with a stored pixel array of calculated image
