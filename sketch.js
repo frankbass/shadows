@@ -125,7 +125,7 @@ function keyPressed() {
     let dy = random(height * 2) - height;
     // dots();
     // background(255);
-    lines(ax, ay, bx, by, cx, cy, dx, dy);
+    // lines(ax, ay, bx, by, cx, cy, dx, dy);
   }
 }
 
@@ -164,40 +164,25 @@ function boxes() {
   //
   // console.log("BA "+slopeBA);
   // console.log("BC "+slopeBC);
-  let orientation = (by - ay) * (cx - bx) - (bx - ax) * (cy - by);
-  if (orientation > 0) {
-    orientation = 1;
-  } else if (orientation == 0) {
-    orientation = 0;
-  } else {
-    orientation = -1;
-  }
-  // console.log("O: " + orientation);
+
 
   let mBA = degrees(atan2(ay - by, ax - bx));
   let mBC = degrees(atan2(cy - by, cx - bx));
-  // let mAC = degrees(atan2(cy - ay, cx - cy));
-  // console.log("BA " + mBA);
-  // console.log("BC " + mBC);
 
   let bcQuad = quadrants(mBC);
   let baQuad = quadrants(mBA);
-
-  // console.log("BC Quad: " + bcQuad);
 
   let m = endPoint(ax, ay, slopeBA, baQuad);
   let n = endPoint(cx, cy, slopeBC, bcQuad);
 
   fourCorners(m, n, baQuad, bcQuad);
-  // console.log("mAC: " + mAC);
 
   // let diffAng = abs(slopeBA - slopeBC);
-  let diffAng = (abs(mBA - mBC));
-  if (diffAng > 180) {
-    let temp = diffAng % 180;
-    diffAng = 180 - temp;
-
-  }
+  // let diffAng = (abs(mBA - mBC));
+  // if (diffAng > 180) {
+  //   let temp = diffAng % 180;
+  //   diffAng = 180 - temp;
+  // }
 
   strokeWeight(1);
   line(ax, ay, bx, by);
@@ -208,8 +193,6 @@ function boxes() {
   strokeWeight(.5);
   line(ax, ay, m.x, m.y);
   line(cx, cy, n.x, n.y);
-
-
 
   noStroke();
   fill(255, 0, 0);
@@ -282,36 +265,34 @@ function endPoint(x2, y2, slope, quadNum) {
   ellipse(x, y, 5, 5);
   let vector = createVector(x, y);
   return vector;
-}
 
-function solveForY(x2, y2, slope, x) {
-  let y = slope * (x - x2) + y2;
-  if (y < 0) {
-    y = 0;
-  } else if (y > height) {
-    y = height;
+  function solveForY(x2, y2, slope, x) {
+    let y = slope * (x - x2) + y2;
+    if (y < 0) {
+      y = 0;
+    } else if (y > height) {
+      y = height;
+    }
+    return y;
   }
-  return y;
-}
 
-function solveForX(x2, y2, slope, y) {
-  let x = (y - y2 + (slope * x2)) / slope;
-  if (x > width) {
-    x = width;
-  } else if (x < 0) {
-    x = 0;
+  function solveForX(x2, y2, slope, y) {
+    let x = (y - y2 + (slope * x2)) / slope;
+    if (x > width) {
+      x = width;
+    } else if (x < 0) {
+      x = 0;
+    }
+    return x;
   }
-  return x;
 }
 
-//this should be an object with a constructor
+//this should be an class with a constructor
 function fourCorners(mVec, nVec, qBA, qBC) {
   let m = mVec;
   let n = nVec;
   let mQuad = qBA;
   let nQuad = qBC;
-  // console.log("mQ " + mQuad);
-  // console.log("nQ " + nQuad);
 
   let c0 = createVector(width, 0);
   let c1 = createVector(0, 0);
@@ -319,18 +300,83 @@ function fourCorners(mVec, nVec, qBA, qBC) {
   let c3 = createVector(width, height);
   let cornerArray = [c0, c1, c2, c3];
 
+  let orientation = orientations();
+  function orientations() {
+    let ax = corners[0];
+    let ay = corners[1];
+    let bx = corners[2];
+    let by = corners[3];
+    // let cx = corners[4];
+    // let cy = corners[5];
+    let cx = mouseX;
+    let cy = mouseY;
+
+    let orient = (by - ay) * (cx - bx) - (bx - ax) * (cy - by);
+    if (orient > 0) {
+      orient = 1;
+    } else if (orient == 0) {
+      orient = 0;
+    } else {
+      orient = -1;
+    }
+    return orient;
+  };
 
   if (m.x == n.x || m.y == n.y) {
-    console.log("It's a line!");
   } else {
-    let polyCorner0 = cornerArray[mQuad];
+    let mO = orientation;
+    let nO = orientation * -1;
+    let mCorner = cornerCalculator(m, mO);
+    let nCorner = cornerCalculator(n, nO);
 
-    console.log(mQuad);
-    if (mQuad == nQuad) {}
+    // console.log(mCorner.x +", "+ mCorner.y);
+    // console.log(nCorner.x +", "+ nCorner.y);
+    function cornerCalculator(vector, orient) {
+      let corner;
+      if (orient == 1) {
+        if (vector.x == 0) {
+          corner= cornerArray[1];
+        }
+        if (vector.x == width) {
+          corner= cornerArray[3];
+        }
+        if (vector.y == 0) {
+          corner= cornerArray[0];
+        }
+        if (vector.y == height) {
+          corner= cornerArray[2];
+        }
+      } else if (orient == -1) {
+        if (vector.x == 0) {
+          corner= cornerArray[2];
+        }
+        if (vector.x == width) {
+          corner= cornerArray[0];
+        }
+        if (vector.y == 0) {
+          corner= cornerArray[1];
+        }
+        if (vector.y == height) {
+          corner= cornerArray[3];
+        }
+      }
+      return corner;
+    }
+
+    trapazoid(m, n, mCorner, nCorner);
   }
 
 
+}
 
+function trapazoid(m, n, mCorner, nCorner) {
+  fill(100);
+  beginShape();
+  vertex(m.x, m.y);
+  vertex(mCorner.x, mCorner.y);
+  vertex(nCorner.x, nCorner.y);
+  vertex(n.x, n.y);
+  endShape(CLOSE);
 }
 
 //fade in with a stored pixel array of calculated image
