@@ -1,5 +1,6 @@
 let greys = [];
 let corners = [];
+let screenCorners = [];
 
 function setup() {
   createCanvas(400, 400);
@@ -11,6 +12,10 @@ function setup() {
 
   corners = randomCorners();
   boxes();
+  pointD();
+  // fill(0,0);
+  // ellipse(100,100,100,100);
+  console.log(get(100, 100)[3]);
 }
 
 function draw() {
@@ -104,25 +109,24 @@ function lines(ax, ay, bx, by, cx, cy, dx, dy) {
   // text("d", dx, dy);
 }
 
-function mousePressed() {
-  boxes();
-}
+// function mousePressed() {
+//   boxes();
+// }
 
 function keyPressed() {
   // console.log(keyCode);
-  if (keyCode == 13) {
-    boxes();
-  }
-  if (keyCode == 32) {
 
-    let ax = random(width * 2) - width;
-    let ay = random(height * 2) - height;
-    let bx = random(width * 2) - width;
-    let by = random(height * 2) - height;
-    let cx = random(width * 2) - width;
-    let cy = random(height * 2) - height;
-    let dx = random(width * 2) - width;
-    let dy = random(height * 2) - height;
+  //enter
+  if (keyCode == 13) {
+
+  }
+  // space
+  if (keyCode == 32) {
+    console.clear();
+    corners = randomCorners();
+    boxes();
+    // randomCorners();
+
     // dots();
     // background(255);
     // lines(ax, ay, bx, by, cx, cy, dx, dy);
@@ -142,7 +146,6 @@ function randomCorners() {
   // let dy = floor(random(height));
 
   // boxes(ax, ay, bx, by, cx, cy);
-
   return [ax, ay, bx, by, cx, cy];
 }
 
@@ -154,17 +157,13 @@ function boxes() {
   let ay = corners[1];
   let bx = corners[2];
   let by = corners[3];
-  // let cx = corners[4];
-  // let cy = corners[5];
-  let cx = mouseX;
-  let cy = mouseY;
-  // console.log("cx, cy: " + cx + ", " + cy);
+  let cx = corners[4];
+  let cy = corners[5];
+  // let cx = mouseX;
+  // let cy = mouseY;
+
   let slopeBA = (ay - by) / (ax - bx);
   let slopeBC = (cy - by) / (cx - bx);
-  //
-  // console.log("BA "+slopeBA);
-  // console.log("BC "+slopeBC);
-
 
   let mBA = degrees(atan2(ay - by, ax - bx));
   let mBC = degrees(atan2(cy - by, cx - bx));
@@ -176,13 +175,6 @@ function boxes() {
   let n = endPoint(cx, cy, slopeBC, bcQuad);
 
   fourCorners(m, n, baQuad, bcQuad);
-
-  // let diffAng = abs(slopeBA - slopeBC);
-  // let diffAng = (abs(mBA - mBC));
-  // if (diffAng > 180) {
-  //   let temp = diffAng % 180;
-  //   diffAng = 180 - temp;
-  // }
 
   strokeWeight(1);
   line(ax, ay, bx, by);
@@ -206,7 +198,6 @@ function boxes() {
   // noStroke();
   vertex(ax, ay);
   vertex(m.x, m.y);
-  // missing corner? vertex
   vertex(n.x, n.y);
   vertex(cx, cy);
   endShape(CLOSE);
@@ -262,6 +253,8 @@ function endPoint(x2, y2, slope, quadNum) {
     default:
   }
   fill(0);
+  x = floor(x);
+  y = floor(y);
   ellipse(x, y, 5, 5);
   let vector = createVector(x, y);
   return vector;
@@ -298,18 +291,18 @@ function fourCorners(mVec, nVec, qBA, qBC) {
   let c1 = createVector(0, 0);
   let c2 = createVector(0, height);
   let c3 = createVector(width, height);
-  let cornerArray = [c0, c1, c2, c3];
+  screenCorners = [c0, c1, c2, c3];
 
   let orientation = orientations();
+
   function orientations() {
     let ax = corners[0];
     let ay = corners[1];
     let bx = corners[2];
     let by = corners[3];
-    // let cx = corners[4];
-    // let cy = corners[5];
-    let cx = mouseX;
-    let cy = mouseY;
+    let cx = corners[4];
+    let cy = corners[5];
+
 
     let orient = (by - ay) * (cx - bx) - (bx - ax) * (cy - by);
     if (orient > 0) {
@@ -322,61 +315,115 @@ function fourCorners(mVec, nVec, qBA, qBC) {
     return orient;
   };
 
-  if (m.x == n.x || m.y == n.y) {
-  } else {
+  if (m.x == n.x || m.y == n.y) {} else {
     let mO = orientation;
     let nO = orientation * -1;
     let mCorner = cornerCalculator(m, mO);
     let nCorner = cornerCalculator(n, nO);
+    let pCorner = mCorner;
+    console.log("mO " + mO + ", nO " + nO);
 
-    // console.log(mCorner.x +", "+ mCorner.y);
-    // console.log(nCorner.x +", "+ nCorner.y);
     function cornerCalculator(vector, orient) {
       let corner;
       if (orient == 1) {
         if (vector.x == 0) {
-          corner= cornerArray[1];
+          corner = screenCorners[1];
         }
         if (vector.x == width) {
-          corner= cornerArray[3];
+          corner = screenCorners[3];
         }
         if (vector.y == 0) {
-          corner= cornerArray[0];
+          corner = screenCorners[0];
         }
         if (vector.y == height) {
-          corner= cornerArray[2];
+          corner = screenCorners[2];
         }
       } else if (orient == -1) {
         if (vector.x == 0) {
-          corner= cornerArray[2];
+          corner = screenCorners[2];
         }
         if (vector.x == width) {
-          corner= cornerArray[0];
+          corner = screenCorners[0];
         }
         if (vector.y == 0) {
-          corner= cornerArray[1];
+          corner = screenCorners[1];
         }
         if (vector.y == height) {
-          corner= cornerArray[3];
+          corner = screenCorners[3];
         }
       }
       return corner;
     }
-
-    trapazoid(m, n, mCorner, nCorner);
+    console.log("m " + m.x + ", " + m.y + ", n " + n.x + ", " + n.y);
+    console.log("mC " + mCorner.x + ", " + mCorner.y + ", nC " + nCorner.x + ", " + nCorner.y);
+    if (mCorner.x == nCorner.x || mCorner.y == nCorner.y) {
+      // poly4(m, n, mCorner, nCorner);
+    } else {
+      let tempB = createVector(corners[2], corners[3]);
+      let longestDist = 0;
+      let tempIndex;
+      for (let i = 0; i < 4; i++) {
+        let tempDist = tempB.dist(screenCorners[i])
+        if (tempDist > longestDist) {
+          longestDist = tempDist;
+          tempIndex = i;
+        }
+      }
+      pCorner = screenCorners[tempIndex];
+      console.log("p " + pCorner.x + ", " + pCorner.y);
+    }
+    poly5(m, n, mCorner, nCorner, pCorner);
+    console.log("time " + frameCount);
+    pointD(m, n, mCorner, nCorner, pCorner);
+    // console.log("d " + d);
   }
-
-
 }
 
-function trapazoid(m, n, mCorner, nCorner) {
+// function poly4(m, n, mCorner, nCorner) {
+//   fill(100);
+//   beginShape();
+//   vertex(m.x, m.y);
+//   vertex(mCorner.x, mCorner.y);
+//   vertex(nCorner.x, nCorner.y);
+//   vertex(n.x, n.y);
+//   endShape(CLOSE);
+// }
+
+function poly5(m, n, mCorner, nCorner, pCorner) {
   fill(100);
   beginShape();
   vertex(m.x, m.y);
   vertex(mCorner.x, mCorner.y);
+  vertex(pCorner.x, pCorner.y);
   vertex(nCorner.x, nCorner.y);
   vertex(n.x, n.y);
   endShape(CLOSE);
+}
+
+function pointD(m, n, mCorner, nCorner, pCorner) {
+  console.log(m.x);
+  let xArray = [m.x];
+  console.log(xArray);
+  let xMin = width;
+  let xMax = 0;
+
+  for (let i = 0; i < xArray.length; i ++) {
+    console.log(i);
+    let tempX = xArray[i].x;
+    console.log("array " + tempX);
+
+    if (xMin > tempX) {
+      xMin = tempX;
+    }
+    if (xMax < tempX) {
+      xMax = tempX;
+    }
+    console.log("min " + xMin + ", max " + xMax);
+  }
+
+  let d = [xMin, xMax];
+
+  // return d;
 }
 
 //fade in with a stored pixel array of calculated image
