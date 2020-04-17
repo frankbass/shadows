@@ -1,5 +1,5 @@
 let greys = [];
-let corners = [];
+let polyCorners = [];
 let screenCorners = [];
 
 function setup() {
@@ -10,12 +10,10 @@ function setup() {
 
   // lines(50, 50, 25, 150, 285, 300, 250, 25);
 
-  corners = randomCorners();
+  polyCorners = randomCorners();
   boxes();
-  pointD();
-  // fill(0,0);
-  // ellipse(100,100,100,100);
-  console.log(get(100, 100)[3]);
+
+
 }
 
 function draw() {
@@ -100,13 +98,6 @@ function lines(ax, ay, bx, by, cx, cy, dx, dy) {
     }
     fade *= .99
   }
-
-  // stroke(0);
-  // fill(255, 0, 255);
-  // text("a", ax, ay);
-  // text("b", bx, by);
-  // text("c", cx, cy);
-  // text("d", dx, dy);
 }
 
 // function mousePressed() {
@@ -123,7 +114,7 @@ function keyPressed() {
   // space
   if (keyCode == 32) {
     console.clear();
-    corners = randomCorners();
+    polyCorners = randomCorners();
     boxes();
     // randomCorners();
 
@@ -138,27 +129,31 @@ function randomCorners() {
   //if by == ay regenerate one of them...
   let ax = floor(random(width - buffer * 2) + buffer);
   let ay = floor(random(height - buffer * 2) + buffer);
+  let a = createVector(ax, ay);
   let bx = floor(random(width - buffer * 2) + buffer);
   let by = floor(random(height - buffer * 2) + buffer);
+  let b = createVector(bx, by);
   let cx = floor(random(width - buffer * 2) + buffer);
   let cy = floor(random(height - buffer * 2) + buffer);
+  let c = createVector(cx, cy);
   // let dx = floor(random(width));
   // let dy = floor(random(height));
 
   // boxes(ax, ay, bx, by, cx, cy);
-  return [ax, ay, bx, by, cx, cy];
+
+  return [a, b, c];
 }
 
 function boxes() {
   background(255);
   noFill();
   rect(0, 0, width - 1, height - 1);
-  let ax = corners[0];
-  let ay = corners[1];
-  let bx = corners[2];
-  let by = corners[3];
-  let cx = corners[4];
-  let cy = corners[5];
+  let ax = polyCorners[0].x;
+  let ay = polyCorners[0].y;
+  let bx = polyCorners[1].x;
+  let by = polyCorners[1].y;
+  let cx = polyCorners[2].x;
+  let cy = polyCorners[2].y;
   // let cx = mouseX;
   // let cy = mouseY;
 
@@ -296,13 +291,12 @@ function fourCorners(mVec, nVec, qBA, qBC) {
   let orientation = orientations();
 
   function orientations() {
-    let ax = corners[0];
-    let ay = corners[1];
-    let bx = corners[2];
-    let by = corners[3];
-    let cx = corners[4];
-    let cy = corners[5];
-
+    let ax = polyCorners[0].x;
+    let ay = polyCorners[0].y;
+    let bx = polyCorners[1].x;
+    let by = polyCorners[1].y;
+    let cx = polyCorners[2].x;
+    let cy = polyCorners[2].y;
 
     let orient = (by - ay) * (cx - bx) - (bx - ax) * (cy - by);
     if (orient > 0) {
@@ -315,13 +309,16 @@ function fourCorners(mVec, nVec, qBA, qBC) {
     return orient;
   };
 
+  let mCorner = null;
+  let nCorner = null;
+  let pCorner = null;
+
   if (m.x == n.x || m.y == n.y) {} else {
     let mO = orientation;
     let nO = orientation * -1;
-    let mCorner = cornerCalculator(m, mO);
-    let nCorner = cornerCalculator(n, nO);
-    let pCorner = mCorner;
-    console.log("mO " + mO + ", nO " + nO);
+    mCorner = cornerCalculator(m, mO);
+    nCorner = cornerCalculator(n, nO);
+    pCorner = mCorner;
 
     function cornerCalculator(vector, orient) {
       let corner;
@@ -354,12 +351,13 @@ function fourCorners(mVec, nVec, qBA, qBC) {
       }
       return corner;
     }
+
     console.log("m " + m.x + ", " + m.y + ", n " + n.x + ", " + n.y);
-    console.log("mC " + mCorner.x + ", " + mCorner.y + ", nC " + nCorner.x + ", " + nCorner.y);
     if (mCorner.x == nCorner.x || mCorner.y == nCorner.y) {
-      // poly4(m, n, mCorner, nCorner);
+      //m and n are on same edge
     } else {
-      let tempB = createVector(corners[2], corners[3]);
+      let tempB = polyCorners[1];
+      // let tempB = createVector(polyCorners[2], polyCorners[3]);
       let longestDist = 0;
       let tempIndex;
       for (let i = 0; i < 4; i++) {
@@ -370,24 +368,14 @@ function fourCorners(mVec, nVec, qBA, qBC) {
         }
       }
       pCorner = screenCorners[tempIndex];
-      console.log("p " + pCorner.x + ", " + pCorner.y);
+      // console.log("p " + pCorner.x + ", " + pCorner.y);
     }
     poly5(m, n, mCorner, nCorner, pCorner);
-    console.log("time " + frameCount);
-    pointD(m, n, mCorner, nCorner, pCorner);
-    // console.log("d " + d);
   }
-}
 
-// function poly4(m, n, mCorner, nCorner) {
-//   fill(100);
-//   beginShape();
-//   vertex(m.x, m.y);
-//   vertex(mCorner.x, mCorner.y);
-//   vertex(nCorner.x, nCorner.y);
-//   vertex(n.x, n.y);
-//   endShape(CLOSE);
-// }
+  // let d = pointD(m, n, mCorner, nCorner, pCorner);
+  // console.log("d " + d);
+}
 
 function poly5(m, n, mCorner, nCorner, pCorner) {
   fill(100);
@@ -401,29 +389,143 @@ function poly5(m, n, mCorner, nCorner, pCorner) {
 }
 
 function pointD(m, n, mCorner, nCorner, pCorner) {
-  console.log(m.x);
-  let xArray = [m.x];
-  console.log(xArray);
-  let xMin = width;
-  let xMax = 0;
 
-  for (let i = 0; i < xArray.length; i ++) {
-    console.log(i);
-    let tempX = xArray[i].x;
-    console.log("array " + tempX);
+  let minVect = minVector();
+  let maxVect = maxVector();
 
-    if (xMin > tempX) {
-      xMin = tempX;
-    }
-    if (xMax < tempX) {
-      xMax = tempX;
-    }
-    console.log("min " + xMin + ", max " + xMax);
+  let p = new pVector(minVect, maxVect);
+  p.createP();
+  p.pinkRect();
+  guessPoint(p);
+
+
+  // let test = m.x;
+// let xArray = [m, n, mCorner, nCorner, pCorner];
+// let xMin = width;
+// let xMax = 0;
+//
+// for (let i = 0; i < xArray.length; i++) {
+//   if (xArray[i] != null) {
+//     let tempX = xArray[i].x;
+//
+//     if (xMin > tempX) {
+//       xMin = tempX;
+//     }
+//     if (xMax < tempX) {
+//       xMax = tempX;
+//     }
+//   }
+//
+// }
+  //   console.log("xMin, xMax " +xMin +", " + xMax);
+  // let randX = floor(random(xMax - xMin) + xMin);
+  // let d = randX;
+  // fill(255, 0, 0);
+  // noStroke();
+  // ellipse(randX, 100, 5, 5);
+  // stroke(.5);
+  // fill(255, 0, 255);
+  // text("D", randX, 100);
+  return d;
+}
+
+class pVector {
+  constructor(minVect, maxVect) {
+    this.min = minVect;
+    this.max = maxVect;
   }
+  createP() {
+    this.x = floor(random(this.max.x - this.min.x) + this.min.x);
+    this.y = floor(random(this.max.y - this.min.y) + this.min.y);
+    this.p = createVector(this.x, this.y);
+  }
+  pinkRect() {
+    noFill();
+    strokeWeight(1);
+    stroke(255, 0, 255);
+    rect(this.min.x, this.min.y, this.max.x - this.min.x, this.max.y - this.min.y);
+  }
+  cyanSpot() {
+    noStroke();
+    fill(0, 255, 255);
+    ellipse(this.x, this.y, 5, 5);
+  };
+}
 
-  let d = [xMin, xMax];
+function inside(polyCorners, px, py) {
+  let inside = false;
+  let next = 0;
+  for (let current = 0; current < polyCorners.length; current++) {
+    // last vertex == first vertex
+    next = current + 1;
+    if (next == polyCorners.length) next = 0;
 
-  // return d;
+    let vc = polyCorners[current];
+    let vn = polyCorners[next];
+
+    // let vc = createVector(polyCorners[current].x, polyCorners[current].y);
+    // let vn = createVector(polyCorners[next].x, polyCorners[next].y);
+
+    if (((vc.y >= py && vn.y < py) || (vc.y < py && vn.y >= py)) &&
+      (px < (vn.x - vc.x) * (py - vc.y) / (vn.y - vc.y) + vc.x)) {
+      inside = !inside;
+    }
+  }
+  console.log(inside);
+  return inside;
+}
+
+function minVector() {
+  let minX = width;
+  let minY = height;
+
+  for (let v of polyCorners) {
+    if (v.x < minX) {
+
+      minX = v.x;
+    }
+    if (v.y < minY) {
+      minY = v.y;
+    }
+  }
+  return createVector(minX, minY);
+}
+
+function maxVector() {
+  let maxX = 0;
+  let maxY = 0;
+
+  for (let v of polyCorners) {
+    if (v.x > maxX) {
+      maxX = v.x;
+    }
+    if (v.y > maxY) {
+      maxY = v.y;
+    }
+  }
+  return createVector(maxX, maxY);
+}
+
+function guessPoint(p) {
+  let hit = false;
+  for (let i = 0; i < 100; i++) {
+    p.createP();
+    p.cyanSpot();
+    let hit = inside(polyCorners, p.x, p.y);
+    if (hit) {
+      break;
+    }
+  }
+}
+
+function drawShape() {
+  fill(0, 150, 255);
+  noStroke();
+  beginShape();
+  for (let v of polyCorners) {
+    vertex(v.x, v.y);
+  }
+  endShape();
 }
 
 //fade in with a stored pixel array of calculated image
