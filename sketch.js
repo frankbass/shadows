@@ -3,37 +3,28 @@ let polyCorners = [];
 let screenCorners = [];
 let quadCorners = [];
 let dispQuad = [];
-
 let timeLength = 180;
-
-let v;
-let vGoal;
-
-let test;
+let movingQuad;
 
 function setup() {
   createCanvas(400, 400);
-  // noStroke();
   noiseArrays();
-  dots();
   makeQuad();
   arrayCopy(quadCorners, 0, dispQuad, 0, quadCorners.length);
-
   lines();
 
-  test = new displayQuad;
-  // test.testFunc();
-  test.increment();
-  test.drawing();
+  movingQuad = new displayQuad;
+  movingQuad.increment();
 }
 
 function draw() {
   background(255);
   if (frameCount % timeLength == 0) {
     makeQuad();
-    test.amountReset();
+    movingQuad.amountReset();
   }
-  test.increment();
+  movingQuad.increment();
+  // displayDots();
   lines();
   // noLoop();
 }
@@ -69,31 +60,20 @@ class displayQuad {
       this.amount = 1;
     }
   }
-  // testFunc() {
-  //   for (let i = 0; i < 4; i ++) {
-  //     this.oldX = dispQuad[i].x;
-  //     this.newX = quadCorners[i].x;
-  //     this.lerpX = lerp(this.oldX, this.newX, this.amount);
-  //     this.oldY = dispQuad[i].y;
-  //     this.newY = quadCorners[i].y;
-  //     this.lerpY = lerp(this.oldY, this.newY, this.amount);
-  //
-  //     dispQuad[i].x = this.lerpX;
-  //     dispQuad[i].y = this.lerpY;
-  //   }
-  // }
-  drawing() {
-    fill(255, 0, 255);
-    for (let i = 0; i < 4; i ++) {
-      this.temp = dispQuad[i];
-      ellipse(this.temp.x, this.temp.y, 5, 5);
-    }
 
-  }
+  // drawing() {
+  //   fill(255, 0, 255);
+  //   for (let i = 0; i < 4; i ++) {
+  //     this.temp = dispQuad[i];
+  //     ellipse(this.temp.x, this.temp.y, 5, 5);
+  //   }
+
+  // }
   amountReset() {
     this.amount = .005;
   }
 }
+
 
 function noiseArrays() {
   let n = 0;
@@ -121,7 +101,7 @@ function noiseArrays() {
   }
 }
 
-function dots() {
+function displayDots() {
   let n = 0;
   for (let i = 0; i < width; i++) {
     for (let j = 0; j < height; j++) {
@@ -130,6 +110,10 @@ function dots() {
       n++;
     }
   }
+}
+
+function displayBackground() {
+  for (let i = 0; i < width; i ++) {}
 }
 
 function lines() {
@@ -498,25 +482,3 @@ function guessPoint(d) {
     }
   }
 }
-
-// function drawShape1() {
-//   fill(0, 150, 255);
-//   noStroke();
-//   beginShape();
-//   for (let v of polyCorners) {
-//     vertex(v.x, v.y);
-//   }
-//   endShape();
-// }
-
-// function drawShape() {
-//   fill(0, 25);
-//   noStroke();
-//   beginShape();
-//   for (let v of quadCorners) {
-//     vertex(v.x, v.y);
-//   }
-//   endShape();
-// }
-
-//fade in with a stored pixel array of calculated image
