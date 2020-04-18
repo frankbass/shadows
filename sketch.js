@@ -5,26 +5,37 @@ let quadCorners = [];
 let dispQuad = [];
 let timeLength = 180;
 let movingQuad;
+let backgroundImage;
+
+
+function preload() {
+  backgroundImage = loadImage('dotsBackground.jpg')
+}
+
 
 function setup() {
-  createCanvas(400, 400);
-  noiseArrays();
+  let canvas = createCanvas(400, 400);
+  backgroundImage.resize(400, 400);
+  image(backgroundImage, 0, 0);
+  // noiseArrays();
+  // displayDots();
+  // saveCanvas(canvas, 'dotsBackground','jpg');
   makeQuad();
   arrayCopy(quadCorners, 0, dispQuad, 0, quadCorners.length);
   lines();
-
+  makeQuad();
   movingQuad = new displayQuad;
   movingQuad.increment();
 }
 
 function draw() {
-  background(255);
   if (frameCount % timeLength == 0) {
     makeQuad();
     movingQuad.amountReset();
   }
   movingQuad.increment();
   // displayDots();
+  image(backgroundImage, 0,0);
   lines();
   // noLoop();
 }
@@ -61,14 +72,6 @@ class displayQuad {
     }
   }
 
-  // drawing() {
-  //   fill(255, 0, 255);
-  //   for (let i = 0; i < 4; i ++) {
-  //     this.temp = dispQuad[i];
-  //     ellipse(this.temp.x, this.temp.y, 5, 5);
-  //   }
-
-  // }
   amountReset() {
     this.amount = .005;
   }
